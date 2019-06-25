@@ -120,9 +120,16 @@ function DashboardCtrl(
     });
   }
 
+  this.addRefreshToPublicUrl = () => {
+    if (this.dashboard.refreshRate) this.dashboard.public_url += '&refresh=' + this.dashboard.refreshRate.rate;
+  };
   this.setRefreshRate = (rate, load = true) => {
     this.refreshRate = rate;
     if (rate !== null) {
+      if (this.dashboard) {
+        this.dashboard.refreshRate = rate; // 将rate加入到this.dashboard中
+        this.addRefreshToPublicUrl();
+      }
       if (load) {
         this.refreshDashboard();
       }

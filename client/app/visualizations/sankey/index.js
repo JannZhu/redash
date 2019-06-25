@@ -69,6 +69,7 @@ function graph(data) {
     const target = getNode(targetName, depth + 1);
     const link = getLink(source.id, target.id);
     link.value += parseInt(value, 10);
+    link.color = 'rgba( 47, 109, 182, 0.2)';
   }
 
   data.forEach((row) => {
@@ -77,7 +78,6 @@ function graph(data) {
     addLink(row[keys[2]], row[keys[3]], row.value || 0, 3);
     addLink(row[keys[3]], row[keys[4]], row.value || 0, 4);
   });
-
   return { nodes, links: _.values(links) };
 }
 
@@ -120,10 +120,12 @@ function createSankey(element, data) {
   }
 
   const format = d => d3.format(',.0f')(d);
-  const color = d3.scale.category20();
+  // const color = d3.scale.category20();//修改 桑基图颜色
+  const color = ['#02A4CE', '#4596D8', '#418ECE', '#66CBF6', '#BCE3F8', '#DE3B84', '#1B2668', '#113A91', '#624EC2', '#0834CB', '#336DFF', '#87ADFF', '#FF7538', '#1A75BB', '#2F979C', '#BCE3F8', '#614DBF', '#F39521', '#418ECE', '#FBA88A'];
 
   data = graph(data);
-  data.nodes = _.map(data.nodes, d => _.extend(d, { color: color(d.name.replace(/ .*/, '')) }));
+  // data.nodes = _.map(data.nodes, d => _.extend(d, { color: color(d.name.replace(/ .*/, '')) })); //修改 桑基图颜色
+  data.nodes = _.map(data.nodes, (d, index) => _.extend(d, { color: color[index % 20] }));
 
   // append the svg canvas to the page
   const svg = d3

@@ -50,6 +50,11 @@ class ShareDashboardDialog extends React.Component {
     );
   }
 
+  addRefreshToPublicUrl = () => {
+    const { dashboard } = this.props;
+    if (dashboard.refreshRate) dashboard.public_url += '&refresh=' + dashboard.refreshRate.rate;
+  }
+
   enableAccess = () => {
     const { dashboard } = this.props;
     this.setState({ saving: true });
@@ -59,6 +64,7 @@ class ShareDashboardDialog extends React.Component {
       .success((data) => {
         dashboard.publicAccessEnabled = true;
         dashboard.public_url = data.public_url;
+        this.addRefreshToPublicUrl();
       })
       .error(() => {
         notification.error('Failed to turn on sharing for this dashboard');

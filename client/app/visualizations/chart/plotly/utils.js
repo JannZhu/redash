@@ -6,7 +6,7 @@ import moment from 'moment';
 import d3 from 'd3';
 import plotlyCleanNumber from 'plotly.js/src/lib/clean_number';
 import { createFormatter, formatSimpleTemplate } from '@/lib/value-format';
-import { ColorPaletteArray } from '@/visualizations/ColorPalette';
+import { ColorPaletteArray, ColorPaletteArrayWithTrans } from '@/visualizations/ColorPalette';
 
 function cleanNumber(value) {
   return isUndefined(value) ? value : (plotlyCleanNumber(value) || 0.0);
@@ -136,11 +136,11 @@ function setType(series, type, options) {
       }
       break;
     case 'line':
-      series.mode = 'lines' + (options.showDataLabels ? '+text' : '');
+      series.mode = 'lines+markers';
+      // series.mode = 'lines' + (options.showDataLabels ? '+text' : '');
       break;
     case 'area':
       series.mode = 'lines' + (options.showDataLabels ? '+text' : '');
-      series.fill = options.series.stacking === null ? 'tozeroy' : 'tonexty';
       break;
     case 'scatter':
       series.type = 'scatter';
@@ -248,11 +248,12 @@ function preparePieData(seriesList, options) {
       });
     });
 
+    // colors: map(serie.data, row => valuesColors[row.x] || getDefaultColor(row.x)),
     return {
       values: map(serie.data, i => i.y),
       labels: map(serie.data, row => (hasX ? normalizeValue(row.x) : `Slice ${index}`)),
       type: 'pie',
-      hole: 0.4,
+      hole: 0.6,
       marker: {
         colors: map(serie.data, row => valuesColors[row.x] || getDefaultColor(row.x)),
       },
@@ -276,15 +277,19 @@ function preparePieData(seriesList, options) {
 }
 
 function prepareHeatmapData(seriesList, options) {
+  // const defaultColorScheme = [
+  //   [0, '#356aff'],
+  //   [0.14, '#4a7aff'],
+  //   [0.28, '#5d87ff'],
+  //   [0.42, '#7398ff'],
+  //   [0.56, '#fb8c8c'],
+  //   [0.71, '#ec6463'],
+  //   [0.86, '#ec4949'],
+  //   [1, '#e92827'],
+  // ];
   const defaultColorScheme = [
-    [0, '#356aff'],
-    [0.14, '#4a7aff'],
-    [0.28, '#5d87ff'],
-    [0.42, '#7398ff'],
-    [0.56, '#fb8c8c'],
-    [0.71, '#ec6463'],
-    [0.86, '#ec4949'],
-    [1, '#e92827'],
+    [0, 'rgba(255, 255, 255, 0)'],
+    [1, '#02A4CE'],
   ];
 
   const formatNumber = createFormatter({
@@ -294,13 +299,14 @@ function prepareHeatmapData(seriesList, options) {
 
   let colorScheme = [];
 
-  if (!options.colorScheme) {
-    colorScheme = defaultColorScheme;
-  } else if (options.colorScheme === 'Custom...') {
-    colorScheme = [[0, options.heatMinColor], [1, options.heatMaxColor]];
-  } else {
-    colorScheme = options.colorScheme;
-  }
+  // if (!options.colorScheme) {
+  //   colorScheme = defaultColorScheme;
+  // } else if (options.colorScheme === 'Custom...') {
+  //   colorScheme = [[0, options.heatMinColor], [1, options.heatMaxColor]];
+  // } else {
+  //   colorScheme = options.colorScheme;
+  // }
+  colorScheme = defaultColorScheme;
 
   return map(seriesList, (series) => {
     const plotlySeries = {
@@ -432,7 +438,8 @@ function prepareChartData(seriesList, options) {
       yValues.push(y);
       yErrorValues.push(yError);
     });
-
+    /* marker: { color: seriesColor },
+    加入条状的黑边框 */
     const plotlySeries = {
       visible: true,
       hoverinfo,
@@ -443,7 +450,14 @@ function prepareChartData(seriesList, options) {
         color: seriesColor,
       },
       name: seriesOptions.name || series.name,
-      marker: { color: seriesColor },
+      marker: {
+      //   line: {
+      //     color: '#3B5169',
+      //     width: 1,
+      //   },
+        color: ColorPaletteArray[index % ColorPaletteArray.length],
+      },
+      // color: seriesColor,
       insidetextfont: {
         color: getFontColor(seriesColor),
       },
@@ -459,13 +473,19 @@ function prepareChartData(seriesList, options) {
     ) {
       plotlySeries.yaxis = 'y2';
     }
-
     setType(plotlySeries, seriesOptions.type, options);
 
-    if (seriesOptions.type === 'bubble') {
+    if (seriesOptions.type === 'area') {
+      plotlySeries.fill = options.series.stacking === null ? 'tozeroy' : 'tonexty';
+      plotlySeries.fillcolor = ColorPaletteArrayWithTrans[index % ColorPaletteArrayWithTrans.length];
+      plotlySeries.line = { color: ColorPaletteArray[index % ColorPaletteArray.length] };
+    } else if (seriesOptions.type === 'bubble') {
       plotlySeries.marker = {
         color: seriesColor,
         size: map(data, i => i.size),
+        line: {
+          color: 'rgba(255, 255, 255, 0)',
+        },
       };
     } else if (seriesOptions.type === 'box') {
       plotlySeries.boxpoints = 'outliers';
@@ -506,11 +526,14 @@ export function prepareLayout(element, seriesList, options, data) {
       r: 10,
       b: 10,
       t: 25,
-      pad: 4,
+      // pad: 4,
     },
     width: Math.floor(element.offsetWidth),
     height: Math.floor(element.offsetHeight),
     autosize: true,
+    paper_bgcolor: 'rgba(255, 255, 255, 0.1)',
+    plot_bgcolor: 'rgba(255, 255, 255, 0)',
+    font: { color: '#EDEDED' },
     showlegend: has(options, 'legend') ? options.legend.enabled : true,
   };
 
@@ -543,7 +566,16 @@ export function prepareLayout(element, seriesList, options, data) {
       title: getTitle(options.xAxis),
       type: getScaleType(options.xAxis.type),
       automargin: true,
+      gridcolor: 'rgba(51, 109, 255, 0.5)',
     };
+
+    if (options.globalSeriesType === 'bubble' || options.globalSeriesType === 'heatmap') {
+      result.xaxis.linecolor = 'rgba(51, 109, 255, 0.5)';
+      result.xaxis.linewidth = 2;
+      result.xaxis.mirror = 'ticks';
+    } else {
+      result.xaxis.showgrid = false;
+    }
 
     if (options.sortX && result.xaxis.type === 'category') {
       if (options.reverseX) {
@@ -562,6 +594,7 @@ export function prepareLayout(element, seriesList, options, data) {
         title: getTitle(options.yAxis[0]),
         type: getScaleType(options.yAxis[0].type),
         automargin: true,
+        gridcolor: 'rgba(51, 109, 255, 0.5)',
       };
 
       if (isNumber(options.yAxis[0].rangeMin) || isNumber(options.yAxis[0].rangeMax)) {
@@ -570,6 +603,12 @@ export function prepareLayout(element, seriesList, options, data) {
           options.yAxis[0].rangeMin,
           options.yAxis[0].rangeMax,
         );
+      }
+
+      if (options.globalSeriesType === 'bubble' || options.globalSeriesType === 'heatmap') {
+        result.yaxis.mirror = 'ticks';
+        result.yaxis.linecolor = 'rgba(51, 109, 255, 0.5)';
+        result.yaxis.linewidth = 2;
       }
     }
 
@@ -580,6 +619,7 @@ export function prepareLayout(element, seriesList, options, data) {
         overlaying: 'y',
         side: 'right',
         automargin: true,
+        gridcolor: 'rgba(51, 109, 255, 0.5)',
       };
 
       if (isNumber(options.yAxis[1].rangeMin) || isNumber(options.yAxis[1].rangeMax)) {
@@ -772,6 +812,7 @@ export function updateLayout(plotlyElement, layout, updatePlot) {
       x: 0,
       xanchor: 'left',
       yanchor: 'bottom',
+      bgcolor: 'rgba(255, 255, 255, 0)',
     };
 
     // set `overflow: visible` to svg containing legend because later we will
@@ -816,6 +857,7 @@ export function updateLayout(plotlyElement, layout, updatePlot) {
       x: 1,
       xanchor: 'left',
       yanchor: 'top',
+      bgcolor: 'rgba(255, 255, 255, 0)',
     };
 
     const legend = plotlyElement.querySelector('.legend');

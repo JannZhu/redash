@@ -1,6 +1,8 @@
 <div class="widget-wrapper">
   <div class="tile body-container widget-visualization" ng-if="$ctrl.type=='visualization'" ng-class="$ctrl.type"
     ng-switch="$ctrl.widget.getQueryResult().getStatus()">
+    <span></span>
+    <span></span>
     <div class="body-row widget-header">
       <div class="t-header widget clearfix">
         <div class="dropdown pull-right widget-menu-remove"  ng-if="!$ctrl.public && $ctrl.dashboard.canEdit()">
@@ -64,15 +66,15 @@
         <span am-time-ago="$ctrl.widget.getQueryResult().getUpdatedAt()" ng-if="!$ctrl.widget.loading"></span>
         <rd-timer from="$ctrl.widget.refreshStartedAt" ng-if="$ctrl.widget.loading"></rd-timer>
       </a>
-      <span class="small hidden-print" ng-if="$ctrl.public">
+      <span class="small hidden-print">
         <i class="zmdi zmdi-time-restore"></i> <span am-time-ago="$ctrl.widget.getQueryResult().getUpdatedAt()"></span>
       </span>
       <span class="visible-print">
         <i class="zmdi zmdi-time-restore"></i> {{$ctrl.widget.getQueryResult().getUpdatedAt() | dateTime}}
       </span>
 
-      <button class="btn btn-sm btn-default pull-right hidden-print btn-transparent btn__refresh" ng-click="$ctrl.refresh()" ng-if="!$ctrl.public"><i class="zmdi zmdi-refresh"></i></button>
-      <button class="btn btn-sm btn-default pull-right hidden-print btn-transparent btn__refresh" ng-click="$ctrl.expandVisualization()"><i class="zmdi zmdi-fullscreen"></i></button>
+      <button class="btn btn-sm pull-right hidden-print btn-transparent btn__refresh" ng-click="$ctrl.refresh()" ><i class="zmdi zmdi-refresh"></i></button>
+      <button class="btn btn-sm pull-right hidden-print btn-transparent btn__refresh" ng-click="$ctrl.expandVisualization()"><i class="zmdi zmdi-fullscreen"></i></button>
     </div>
   </div>
 

@@ -18,7 +18,56 @@
     overflow: hidden;
     margin: 0;
     padding: 0;
+    // border-radius: 10px;
+    // box-shadow:  0px 4px 2px #eee;
+
+    & > span:nth-child(1) {
+      content: '';
+      border-style: solid;
+      border-color: #065171;
+      border-width: 2px 2px 0 0;
+      width: 20px;
+      height: 20px;
+      right: 0px;
+      top: 0px;
+      position: absolute;
+    }
+    & > span:nth-child(2) {
+      content: '';
+      border-style: solid;
+      border-color: #065171;
+      border-width: 0 0 2px 2px;
+      left: 0px;
+      bottom: 0px;
+      width: 20px;
+      height: 20px;
+      position: absolute;
+    }
+    
+    &::before {
+      content: '';
+      border-style: solid;
+      border-color: #065171;
+      border-width: 2px 0 0 2px;
+      left: 0px;
+      top: 0px;
+      width: 20px;
+      height: 20px;
+      position: absolute;
+    }
+    &::after {
+      content: '';
+      border-style: solid;
+      border-color: #065171;
+      border-width: 0 2px 2px 0;
+      width: 20px;
+      height: 20px;
+      right: 0px;
+      bottom: 0px;
+      position: absolute;
+    }
   }
+  
 
   .pivot-table-renderer > table, grid-renderer > div, visualization-renderer > div {
     overflow: visible;
@@ -33,32 +82,33 @@
     }
   }
 
-  &.editing-mode {
-    /* Y axis lines */
-    background: linear-gradient(to right, transparent, transparent 1px, #F6F8F9 1px, #F6F8F9), linear-gradient(to bottom, #B3BABF, #B3BABF 1px, transparent 1px, transparent);
-    background-size: 5px 50px;
-    background-position-y: -8px;
+  // editing-mode网格线处理
+  // &.editing-mode {
+  //   /* Y axis lines */
+  //   background: linear-gradient(to right, transparent, transparent 1px, #F6F8F9 1px, #F6F8F9), linear-gradient(to bottom, #B3BABF, #B3BABF 1px, transparent 1px, transparent);
+  //   background-size: 5px 50px;
+  //   background-position-y: -8px;
 
-    /* X axis lines */
-    &::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 85px;
-      right: 15px;
-      background: linear-gradient(to bottom, transparent, transparent 2px, #F6F8F9 2px, #F6F8F9 5px), linear-gradient(to left, #B3BABF, #B3BABF 1px, transparent 1px, transparent);
-      background-size: calc((100vw - 15px) / 6) 5px;
-      background-position: -7px 1px;
-    }
+  //   /* X axis lines */
+  //   &::before {
+  //     content: "";
+  //     position: absolute;
+  //     top: 0;
+  //     left: 0;
+  //     bottom: 85px;
+  //     right: 15px;
+  //     background: linear-gradient(to bottom, transparent, transparent 2px, #F6F8F9 2px, #F6F8F9 5px), linear-gradient(to left, #B3BABF, #B3BABF 1px, transparent 1px, transparent);
+  //     background-size: calc((100vw - 15px) / 6) 5px;
+  //     background-position: -7px 1px;
+  //   }
 
-    .widget-menu-regular {
-      display: none;
-    }
-    .widget-menu-remove {
-      display: block;
-    }
-  }
+  //   .widget-menu-regular {
+  //     display: none;
+  //   }
+  //   .widget-menu-remove {
+  //     display: block;
+  //   }
+  // }
 
   .dashboard-widget-wrapper:not(.widget-auto-height-enabled) {
     visualization-renderer {
@@ -198,6 +248,7 @@
 }
 
 public-dashboard-page {
+  background: #03142f;
   > .container {
     min-height: calc(100vh - 95px);
   }
@@ -224,6 +275,7 @@ dashboard-page, dashboard-page .container {
   position: relative;
   flex-grow: 1;
   display: flex;
+  background: #03142f;
 }
 
 // soon deprecated

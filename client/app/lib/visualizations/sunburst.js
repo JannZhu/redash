@@ -1,14 +1,19 @@
 import * as d3 from 'd3';
 import _ from 'lodash';
 import angular from 'angular';
+import { ColorPaletteArray } from '@/visualizations/ColorPalette';
+
 
 const exitNode = '<<<Exit>>>';
 const colors = d3.scale.category10();
 
+
 // helper function colorMap - color gray if "end" is detected
 function colorMap(d) {
-  return colors(d.name);
+  // return colors(d.name);
+  return ColorPaletteArray[d.value % 10];
 }
+
 
 // Return array of ancestors of nodes, highest first, but excluding the root.
 function getAncestors(node) {
@@ -141,6 +146,7 @@ function Sunburst(scope, element) {
       .append('polygon')
       .classed('breadcrumbs-shape', true)
       .attr('points', breadcrumbPoints)
+      // .attr('fill', colorMap);
       .attr('fill', colorMap);
 
     breadcrumb
@@ -247,6 +253,7 @@ function Sunburst(scope, element) {
       .classed('nodePath', true)
       .attr('display', d => (d.depth ? null : 'none'))
       .attr('d', arc)
+      // .attr('fill', colorMap)
       .attr('fill', colorMap)
       .attr('opacity', 1)
       .attr('stroke', 'white')
